@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TimeLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -42,7 +43,7 @@ class TimeLogController extends Controller
             'minutes' => 'required|integer|min:0|max:59',
         ]);
 
-        $totalMinutes = TimeLog::where('work_date', $validated['work_date'])->get()
+        $totalMinutes = TimeLog::whereDate('work_date', Carbon::parse($validated['work_date'])->toDateString())->get()
             ->sum(fn($log) => $log->hours * 60 + $log->minutes);
 
         $newMinutes = $validated['hours'] * 60 + $validated['minutes'];
@@ -84,7 +85,7 @@ class TimeLogController extends Controller
             'minutes' => 'required|integer|min:0|max:59',
         ]);
 
-        $totalMinutes = TimeLog::where('work_date', $validated['work_date'])
+        $totalMinutes = TimeLog::whereDate('work_date', Carbon::parse($validated['work_date'])->toDateString())
             ->where('id', '!=', $timeLog->id)
             ->get()
             ->sum(fn($log) => $log->hours * 60 + $log->minutes);
